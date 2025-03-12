@@ -29,7 +29,7 @@ get("/square_root/results") do
   
     @users_number = params.fetch("users_number")
   
-    @result = params.fetch("users_number").to_f ** 0.5
+    @result = @users_number.to_f ** 0.5
   
     erb(:square_root_results)
 end
@@ -41,18 +41,30 @@ end
 
 get("/payment/results") do
   
-    @apr = params.fetch("apr").to_fs(:percentage, {:precision => 4}) 
-    @years = params.fetch("years").to_i 
-    @principal = params.fetch("principal").to_fs(:currency, {:precision => 2}) 
+    @apr = params.fetch("apr").to_i.to_fs(:percentage, {:precision => 4}) 
+    @years = params.fetch("years").to_i
+    @principal = params.fetch("principal").to_i.to_fs(:currency, {:precision => 2}) 
 
-    @r = @apr / 100 / 12
-    @n = params.fetch("years").to_f / 12
-    @numerator = (@r.to_i) * @principal.to_i
+    
+    @r = params.fetch("apr").to_f / 100 / 12
+    @n = @years.to_f * 12
+    @numerator = (@r) * params.fetch("principal").to_f
     @denominator = 1 - ((1 + @r) ** (-@n))
 
-    ratio = @numerator  @denominator
+    @result = @numerator / @denominator
 
-    @result = ratio 
+    erb(:payment_results)
+end
+
+get("/random/new") do
+  erb(:random)
+end
+
+get("/random/results") do
   
-    erb(:payments_results)
+    @minimum_num = params.fetch("user_min").to_f
+    @maximum_num = params.fetch("user_max").to_f
+    @random = rand(@minimum_num..@maximum_num)
+
+    erb(:random_results)
 end
